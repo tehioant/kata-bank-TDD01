@@ -20,7 +20,7 @@ def test_access_private_variable_balance_impossible():
     # THEN
     with pytest.raises(AttributeError) as error:
         bank_account.balance == 0
-    assert error.value.args[0] == "\'BankAccount\' object has no attribute \'balance\'"
+    assert error.value.args[0] == "'BankAccount' object has no attribute 'balance'"
 
 
 def test_given_bank_account_balance_when_make_deposit_should_return_balance():
@@ -38,10 +38,10 @@ def test_given_bank_account_balance_when_make_deposit_of_negative_value_should_t
     # GIVEN
     bank_account = BankAccount()
 
-    # WHEN
-    bank_account.make_deposit(-2)
-
-    # THEN
+    # WHEN - THEN
+    with pytest.raises(ValueError) as error:
+        bank_account.make_deposit(-2)
+    assert error.value.args[0] == "Deposit value should be positive"
 
 # DONE open a bank account with amount at 0
 # DONE obtain balance in bank account
