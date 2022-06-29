@@ -1,14 +1,6 @@
+import pytest as pytest
+
 from bank.main import BankAccount
-
-
-def test_create_bank_account_with_ammout_at_Zero():
-    # GIVEN
-
-    # WHEN
-    bank_account = BankAccount()
-
-    # THEN
-    assert bank_account.balance == 0
 
 
 def test_given_bank_account_with_balance_zero_return_correct_balance():
@@ -17,6 +9,18 @@ def test_given_bank_account_with_balance_zero_return_correct_balance():
 
     # WHEN-THEN
     assert bank_account.get_balance() == 0
+
+
+def test_access_private_variable_balance_impossible():
+    # GIVEN
+
+    # WHEN
+    bank_account = BankAccount()
+
+    # THEN
+    with pytest.raises(AttributeError) as error:
+        bank_account.balance == 0
+    assert error.value.args[0] == "\'BankAccount\' object has no attribute \'balance\'"
 
 
 def test_given_bank_account_balance_when_make_deposit_should_return_balance():
