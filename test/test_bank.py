@@ -34,14 +34,19 @@ def test_given_bank_account_balance_when_make_deposit_should_return_balance():
     assert bank_account.get_balance() == 1000
 
 
-def test_given_bank_account_balance_when_make_deposit_of_negative_value_should_throw_exception():
+def test_given_bank_account_balance_when_make_deposit_of_invalid_value_should_throw_exception():
     # GIVEN
     bank_account = BankAccount()
+    invalid_deposit_values = [-2, 0]
 
     # WHEN - THEN
-    with pytest.raises(ValueError) as error:
-        bank_account.make_deposit(-2)
-    assert error.value.args[0] == "Deposit value should be positive"
+    for deposit_value in invalid_deposit_values:
+        with pytest.raises(ValueError) as error:
+            bank_account.make_deposit(deposit_value)
+        assert error.value.args[0] == "Deposit value should be positive"
+
+
+
 
 # DONE open a bank account with amount at 0
 # DONE obtain balance in bank account
