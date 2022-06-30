@@ -1,9 +1,10 @@
 import datetime
+from dataclasses import dataclass
 
 import pandas as pd
 
-from dataclasses import dataclass
 from bank.exceptions import InsufficientBalanceError
+from bank.time import TimeService
 
 
 @dataclass
@@ -34,14 +35,13 @@ class BankAccount:
         if self._balance < amount:
             raise InsufficientBalanceError(f"Insufficient funds : your current balance is {self._balance}")
         self._balance -= amount
+        self.create_transaction(-amount)
 
     def get_trading_operation_history(self) -> pd.DataFrame:
-        return self._trading_operations_history
+        return self._trading_operations_history.sort_values("Date", ascending=False).reset_index(drop=True)
 
     def create_transaction(self, amount):
-        transaction = Transaction(datetime.date.today(), amount, self._balance)
-        if self._trading_operations_history.empty:
-            self._trading_operations_history = pd.DataFrame.from_dict(transaction.__dict__, orient='index').T
-        else:
-            self._trading_operations_history = pd.concat(
-                [self._trading_operations_history, pd.DataFrame.from_dict(transaction.__dict__)])
+        transaction = Transaction(TimeService.get_time_now(), amount, self._balance)
+        list_transactions = self._trading_operations_history.to_dict(orient="records")
+        list_transactions.append(transaction.__dict__)
+        self._trading_operations_history = pd.DataFrame(list_transactions)
