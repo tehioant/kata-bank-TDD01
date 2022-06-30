@@ -46,12 +46,19 @@ def test_given_bank_account_balance_when_make_deposit_of_invalid_value_should_th
         assert error.value.args[0] == "Deposit value should be positive"
 
 
-
+def test_given_bank_account_balance_when_make_withdrawal_should_return_correct_balance():
+    # GIVEN
+    bank_account = BankAccount()
+    bank_account.make_deposit(1000)
+    # WHEN
+    bank_account.make_withdrawal(300)
+    # THEN
+    assert bank_account.get_balance() == 700
 
 # DONE open a bank account with amount at 0
 # DONE obtain balance in bank account
 # DONE make deposit of 10 recorded /with today's date
-# cannot make deposit <= 0
+# DONE cannot make deposit <= 0
 # make withdrawal of 5 recorded /with today's date
 # cannot make withdrawal <= 0
 # handle exception when insufficient balance for withdrawal
