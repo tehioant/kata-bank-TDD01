@@ -6,6 +6,7 @@ from unittest.mock import patch
 import pandas as pd
 import pytest as pytest
 
+from bank.client import Client
 from bank.exceptions import InsufficientBalanceError
 from bank.main import BankAccount, Bank
 from bank.time import TimeService
@@ -186,11 +187,60 @@ class TestTransaction(TestCase):
         # THEN
         assert trading_history.equals(expected_history)
 
-# DONE open a bank account with amount at 0
-# DONE obtain balance in bank account
-# DONE make deposit of 10 recorded /with today's date
-# DONE cannot make deposit <= 0
-# DONE make withdrawal of 5 recorded /with today's date
-# DONE cannot make withdrawal <= 0
-# DONE handle exception when insufficient balance for withdrawal
-# return list of all transactions sorted by date
+
+# client transfer 3 params : 2 ibans et amount
+# valid amount
+# 1e iban exist in bank registery
+# 2e iban exist in bank -> internal transfer
+# 2e iban does not exist in bank -> external transfer
+# external tranfer = call client
+# OK -> api response 200
+# missing params -> api response 400
+# amount negative -> api response 400
+# .
+
+def test_given_iban_from_and_to_exist_when_transfer_between_two_accounts_balances_should_be_updated():
+    # GIVEN
+    bank = Bank()
+    iban_account_1 = bank.create_account()
+    iban_account_2 = bank.create_account()
+    account_1 = bank.get_account_by_iban(iban_account_1)
+    account_2 = bank.get_account_by_iban(iban_account_2)
+    account_1.make_deposit(660)
+
+    # WHEN
+    bank.transfer(iban_from=iban_account_1, iban_to=iban_account_2, amount=560)
+
+    # THEN
+    assert account_1.get_balance() == 100
+    assert account_2.get_balance() == 560
+
+
+def test_iban_from_not_in_bank_when_transfer_should_raise_KeyError():
+    # GIVEN
+    bank = Bank()
+    # WHEN
+
+    # THEN
+    with pytest.raises(KeyError) as error:
+        bank.transfer(uuid.uuid4(), uuid.uuid4(), 200)
+    assert error.value.args[0] == "iban not found in accounts"
+
+
+def test_iban_from_exist_and_iban_to_not_in_bank_when_transfer_should_call_client():
+    # GIVEN
+    bank = Bank()
+    iban_account_1 = bank.create_account()
+    # WHEN
+
+    # THEN
+    with pytest.raises(KeyError) as error:
+        bank.transfer(iban_account_1, uuid.uuid4(), 200)
+    assert error.value.args[0] == "iban not found in accounts"
+
+
+def test_make_client_call():
+    client = Client()
+
+    x = client.post({"ibanFrom": "xxxxxx", "ibanTo": "GB33BUKB20201555555555", "amount": 200.00})
+    assert x.status_code == 200

@@ -15,32 +15,6 @@ class Transaction:
     Balance: float
 
 
-class Bank:
-
-    def __init__(self):
-        self._accounts = {}
-
-    def get_accounts(self) -> dict:
-        return self._accounts
-
-    def create_account(self) -> uuid.UUID:
-        iban = uuid.uuid4()
-        self._accounts.update({iban: BankAccount(iban)})
-        return iban
-
-    def get_account_by_iban(self, iban):
-        try:
-            return self._accounts[iban]
-        except KeyError:
-            raise KeyError("iban not found in accounts")
-
-    def transfer(self, iban_from, iban_to, amount):
-        pass
-
-
-# def transfer(iban_from, iban_to, amount):
-
-
 class BankAccount:
 
     def __init__(self, iban):
@@ -76,3 +50,31 @@ class BankAccount:
         list_transactions = self._trading_operations_history.to_dict(orient="records")
         list_transactions.append(transaction.__dict__)
         self._trading_operations_history = pd.DataFrame(list_transactions)
+
+
+class Bank:
+
+    def __init__(self):
+        self._accounts = {}
+
+    def get_accounts(self) -> dict:
+        return self._accounts
+
+    def create_account(self) -> uuid.UUID:
+        iban = uuid.uuid4()
+        self._accounts.update({iban: BankAccount(iban)})
+        return iban
+
+    def get_account_by_iban(self, iban) -> BankAccount:
+        try:
+            return self._accounts[iban]
+        except KeyError:
+            raise KeyError("iban not found in accounts")
+
+    def transfer(self, iban_from, iban_to, amount):
+        account_from = self.get_account_by_iban(iban_from)
+        account_to = self.get_account_by_iban(iban_to)
+        account_from.make_withdrawal(amount)
+        account_to.make_deposit(amount)
+
+# def transfer(iban_from, iban_to, amount):
