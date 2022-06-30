@@ -23,15 +23,16 @@ def test_access_private_variable_balance_impossible():
     assert error.value.args[0] == "'BankAccount' object has no attribute 'balance'"
 
 
-def test_given_bank_account_balance_when_make_deposit_should_return_balance():
+def test_given_bank_account_balance_when_make_two_deposits_should_return_balance():
     # GIVEN
     bank_account = BankAccount()
 
     # WHEN
     bank_account.make_deposit(1000)
+    bank_account.make_deposit(650.5)
 
     # THEN
-    assert bank_account.get_balance() == 1000
+    assert bank_account.get_balance() == 1650.5
 
 
 def test_given_bank_account_balance_when_make_deposit_of_invalid_value_should_throw_exception():

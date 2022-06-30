@@ -9,7 +9,7 @@ class BankAccount:
     def make_deposit(self, amount):
         if amount <= 0:
             raise ValueError('Deposit value should be positive')
-        self._balance = amount
+        self._balance += amount
 
     def make_withdrawal(self, amount):
         self._balance -= amount
