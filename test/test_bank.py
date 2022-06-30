@@ -35,16 +35,17 @@ def test_given_bank_account_balance_when_make_two_deposits_should_return_balance
     assert bank_account.get_balance() == 1650.5
 
 
-def test_given_bank_account_balance_when_make_deposit_of_invalid_value_should_throw_exception():
+@pytest.mark.parametrize("deposit", [-2, 0])
+def test_given_bank_account_balance_when_make_deposit_of_invalid_value_should_throw_exception(deposit):
     # GIVEN
     bank_account = BankAccount()
-    invalid_deposit_values = [-2, 0]
+    # invalid_deposit_values = [-2, 0]
 
     # WHEN - THEN
-    for deposit_value in invalid_deposit_values:
-        with pytest.raises(ValueError) as error:
-            bank_account.make_deposit(deposit_value)
-        assert error.value.args[0] == "Deposit value should be positive"
+    # for deposit_value in invalid_deposit_values:
+    with pytest.raises(ValueError) as error:
+        bank_account.make_deposit(deposit)
+    assert error.value.args[0] == "Deposit value should be positive"
 
 
 def test_given_bank_account_balance_when_make_withdrawal_should_return_correct_balance():
