@@ -1,4 +1,5 @@
 import pytest as pytest
+import pandas as pd
 
 from bank.exceptions import InsufficientBalanceError
 from bank.main import BankAccount
@@ -80,11 +81,22 @@ def test_given_bank_account_balance_with_150_when_make_withdrawal_of_200_should_
         bank_account.make_withdrawal(200)
     assert error.value.args[0] == f"Insufficient funds : your current balance is {bank_account.get_balance()}"
 
+
+def test_given_deposit_150_should_return_trading_operation_history():
+    # GIVEN
+    bank_account = BankAccount()
+    bank_account.make_deposit(150)
+    # WHEN
+    expected_trading_operation_history = pd.DataFrame(
+        data={"Date": ["2022-06-29"], "Transaction": [150], "Balance": [150]})
+    # THEN
+    assert bank_account.get_trading_operation_history() == expected_trading_operation_history
+
 # DONE open a bank account with amount at 0
 # DONE obtain balance in bank account
 # DONE make deposit of 10 recorded /with today's date
 # DONE cannot make deposit <= 0
-# make withdrawal of 5 recorded /with today's date
-# cannot make withdrawal <= 0
-# handle exception when insufficient balance for withdrawal
+# DONE make withdrawal of 5 recorded /with today's date
+# DONE cannot make withdrawal <= 0
+# DONE handle exception when insufficient balance for withdrawal
 # return list of all transactions sorted by date
