@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from dataclasses import dataclass
 
 import pandas as pd
@@ -14,11 +15,41 @@ class Transaction:
     Balance: float
 
 
-class BankAccount:
+class Bank:
 
     def __init__(self):
+        self._accounts = {}
+
+    def get_accounts(self) -> dict:
+        return self._accounts
+
+    def create_account(self) -> uuid.UUID:
+        iban = uuid.uuid4()
+        self._accounts.update({iban: BankAccount(iban)})
+        return iban
+
+    def get_account_by_iban(self, iban):
+        try:
+            return self._accounts[iban]
+        except KeyError:
+            raise KeyError("iban not found in accounts")
+
+    def transfer(self, iban_from, iban_to, amount):
+        pass
+
+
+# def transfer(iban_from, iban_to, amount):
+
+
+class BankAccount:
+
+    def __init__(self, iban):
+        self._iban = iban
         self._balance = 0
         self._trading_operations_history = pd.DataFrame(columns=["Date", "Transaction", "Balance"])
+
+    def get_iban(self):
+        return self._iban
 
     def get_balance(self) -> float:
         return self._balance
