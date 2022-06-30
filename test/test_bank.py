@@ -1,5 +1,6 @@
 import pytest as pytest
 
+from bank.exceptions import InsufficientBalanceError
 from bank.main import BankAccount
 
 
@@ -56,6 +57,28 @@ def test_given_bank_account_balance_when_make_withdrawal_should_return_correct_b
     bank_account.make_withdrawal(300)
     # THEN
     assert bank_account.get_balance() == 700
+
+
+@pytest.mark.parametrize("deposit", [-10, 0])
+def test_given_bank_account_balance_when_make_withdrawal_of_invalid_values_should_throw_an_exception(deposit):
+    # GIVEN
+    bank_account = BankAccount()
+
+    # WHEN - THEN
+    with pytest.raises(ValueError) as error:
+        bank_account.make_withdrawal(deposit)
+    assert error.value.args[0] == "Withdrawal value should be positive"
+
+
+def test_given_bank_account_balance_with_150_when_make_withdrawal_of_200_should_throw_an_exception():
+    # GIVEN
+    bank_account = BankAccount()
+    bank_account.make_deposit(150)
+    # GIVEN
+    # THEN
+    with pytest.raises(InsufficientBalanceError) as error:
+        bank_account.make_withdrawal(200)
+    assert error.value.args[0] == f"Insufficient funds : your current balance is {bank_account.get_balance()}"
 
 # DONE open a bank account with amount at 0
 # DONE obtain balance in bank account

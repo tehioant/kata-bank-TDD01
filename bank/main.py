@@ -1,3 +1,6 @@
+from bank.exceptions import InsufficientBalanceError
+
+
 class BankAccount:
 
     def __init__(self):
@@ -12,4 +15,8 @@ class BankAccount:
         self._balance += amount
 
     def make_withdrawal(self, amount):
+        if amount <= 0:
+            raise ValueError('Withdrawal value should be positive')
+        if self._balance < amount:
+            raise InsufficientBalanceError(f"Insufficient funds : your current balance is {self._balance}")
         self._balance -= amount
